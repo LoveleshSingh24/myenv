@@ -48,3 +48,7 @@ def register(request):
 
     # If the method is not POST or passwords matched, render the register page
     return render(request, 'register.html')
+
+def profile(request):
+
+    return render(request,"profile.html")
