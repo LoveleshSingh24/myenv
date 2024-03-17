@@ -5,8 +5,12 @@ from account.models import Profile
 
 # Create your views here.
 def home(request):
-    user_object=User.objects.get(username=request.user)
-    user_profile3=Profile.objects.get(user=user_object)
-    
-    context={"user_pro":user_profile3}
-    return render(request,'welcome.html',context)
+    if(request.user.is_authenticated):
+        user_object2 = User.objects.get(username=request.user)
+        user_profile =Profile.objects.get(user=user_object2)
+        
+        context={"user_profile2":user_profile}
+        return render(request,'welcome.html',context)
+    else:
+        return render(request,'welcome.html')
+        
