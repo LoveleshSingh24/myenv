@@ -3,10 +3,14 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.contrib.auth.models import User,auth
 from . models import Profile
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # Create your views here.
 def register(request):
+    if(request.user.is_authenticated):
+        return redirect('profile,request.user.user.username')
+    
     if request.method == "POST":
         # post method takes the name field 
         email = request.POST.get('email')
@@ -41,7 +45,7 @@ def register(request):
                 new_profile.save()
                 
                 #redirect to profile page
-                return redirect('home') #todo
+                return redirect('profile',user_model.username) #todo #or username
         else:
             messages.error(request, "Passwords do not match!")
             return redirect('register')
@@ -49,6 +53,42 @@ def register(request):
     # If the method is not POST or passwords matched, render the register page
     return render(request, 'register.html')
 
-def profile(request):
 
-    return render(request,"profile.html")
+@login_required(login_url='login')
+def profile(request,username):
+    #profile user
+    user_object2=User.objects.get(username=username);
+    user_profile2=Profile.objects.get(user=user_object2)
+
+    #request user
+    user_object = User.objects.get(username=request.user)
+    user_profile=Profile.objects.get(user=user_object)
+
+    context={"user_profile":user_profile,"user_profile2": user_profile2}
+    return render(request,"profile.html",context)
+
+def login(request):
+    if(request.user.is_authenticated):
+        return redirect('profile,request.user.user.username')
+
+    #log in the user and redirect to profile
+    if request.method=="POST":
+        username=request.POST.get('username')
+        password=request.POST.get('password')
+        user=auth.authenticate(username=username,password=password)
+        
+        if user is not None :
+            #auth login take the credential 
+            auth.login(request,user)
+            return redirect('profile',username)
+        else:
+            messages.error(request,"Credential Invalid !")
+            return redirect('login')
+        
+    return render(request,'login.html')
+
+
+@login_required(login_url='login')
+def logout(request):
+    auth.logout(request)
+    return redirect('login')

@@ -1,7 +1,8 @@
 {% extends "index.html" %}
 {% load static %}
+{% block title %}{{user_profile.user.username}}'s Profile-QuizPlanet{% endblock title %}
 {% block content %}
-    <h1 class="display-4 text-center my-5">@aman's Profile</h1>
+    <h1 class="display-4 text-center my-5">{{user_profile.user.username}}'s Profile</h1>
     <div class="container text-center">
         <div class="btn-group" role="group" aria-label="Basic mixed styles example">
             <a href="./profile-edit.html" type="button" class="btn btn-outline-primary">Edit</a>
@@ -11,14 +12,14 @@
         <div class="container text-center my-4">
             <div class="row row-cols-sm-1 row-cols-md-2">
                 <div class="col-12">
-                    <img src="{% static "images/user.png" %}" alt="user-profile" width="150" height="150">
+                    <img src="{{user_profile.profile_img.url}}" class="rounded-circle" alt="user-profile" width="150" height="150">
                     <h2 class="fs-3">@{{user_profile.user.username}}</h2>
                 </div>
                 <div class="col-12">
-                    <h2>Aman Sharma</h2>
-                    <p class="fs-5"><i class="bi bi-gender-ambiguous"></i>{{user_profile.gender}}</p>
-                    <p class="fs-5"><i class="bi bi-geo-alt-fill"></i>{{user_profile.location}}</p>
-                    <p class="fs-5"><i class="bi bi-file-person"></i> {{user_profile.bio}}</p>
+                    <h2>{{user_profile.user.first_name | default:"Full Name Not Available"}} {{user_profile.user.last_name}} </h2>
+                    <p class="fs-5"><i class="bi bi-gender-ambiguous"></i>{{user_profile.gender|default:"Gendr Not Available"}}</p>
+                    <p class="fs-5"><i class="bi bi-geo-alt-fill"></i>{{user_profile.location | default:"Location Not Available"}}</p>
+                    <p class="fs-5"><i class="bi bi-file-person"></i> {{user_profile.bio | default:"Bio Not Available"}}</p>
                 </div>
             </div>
         </div>
@@ -28,7 +29,7 @@
         <div class="container">
             <div class="row row-cols-sm-1 row-cols-md-1 row-cols-lg-2">
                 <div class="col-12">
-                    <h3>Quiz attended by @aman</h3>
+                    <h3>Quiz attended by {{user_profile.user.username}}</h3>
                     <table class="table">
                         <thead>
                             <tr>
@@ -61,7 +62,7 @@
                     </table>
                 </div>
                 <div class="col-12">
-                    <h3>@aman's performance</h3>
+                    <h3>{{user_profile.user.username }}'s performance</h3>
                 </div>
             </div>
         </div>
