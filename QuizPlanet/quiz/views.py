@@ -41,3 +41,16 @@ def search_view(request,category):
 
     context={"user_profile2":user_profile2,"quizzes":quizzes,"categories":categories}
     return render(request,"all-quiz.html", context)
+
+@login_required(login_url='login')
+def quiz_view(request,quiz_id):
+    user_object = User.objects.get(username=request.user)
+    user_profile2 =Profile.objects.get(user=user_object)
+    
+    quiz = Quiz.objects.filter(id=quiz_id).first()
+    if quiz != None :
+       context={"user_profile2":user_profile2,"quiz":quiz}
+    else:
+        return redirect('all_quiz')
+    
+    return render(request,'quiz.html',context)
