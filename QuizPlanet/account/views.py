@@ -57,14 +57,14 @@ def register(request):
 @login_required(login_url='login')
 def profile(request,username):
     #profile user
-    user_object=User.objects.get(username=username);
-    user_profile=Profile.objects.get(user=user_object)
+    user_object2=User.objects.get(username=username);
+    user_profile2=Profile.objects.get(user=user_object2)
 
     #request user
-    user_object2 = User.objects.get(username=request.user)
-    user_profile2 =Profile.objects.get(user=user_object2)
+    user_object = User.objects.get(username=request.user)
+    user_profile =Profile.objects.get(user=user_object)
 
-    context={"user_profile":user_profile,"user_profile2": user_profile2}
+    context={"user_profile":user_profile2,"user_profile2": user_profile}
     return render(request,"profile.html",context)
 
 def login(request):
