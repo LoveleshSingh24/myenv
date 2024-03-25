@@ -1,6 +1,10 @@
 from django.db import models
 import pandas as pd
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models import Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length = 15)
@@ -74,4 +78,48 @@ class Choice(models.Model):
     def __str__(self):
         return f"{self.question.text[:50]},{self.text[:20]}"
     
-    
+class QuizSubmission(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz,on_delete=models.CASCADE)
+    score = models.IntegerField()
+    submitted_at=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user}, {self.quiz.title}"
+
+class UserRank(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    rank=models.IntegerField(null=True,blank =True)
+    total_score = models.IntegerField(null=True,blank=True)
+
+    def __str__(self):
+        return f"{self.rank}, {self.user.username}"
+
+@receiver(post_save, sender=QuizSubmission)
+def updated_leaderboard(sender, instance, created, **kwargs):
+    if created:
+        update_leaderboard()
+
+
+def update_leaderboard():
+    # Count the sum of all users' scores
+    user_scores = QuizSubmission.objects.values('user').annotate(total_score=Sum('score')).order_by('-total_score')
+
+    # Update rank based on the sorted list
+    rank = 1
+    for entry in user_scores:
+        user_id = entry['user']
+        total_score = entry['total_score']
+
+        # Retrieve User instance
+        user = User.objects.get(id=user_id)
+        
+        # Check if UserRank already exists for this user
+        user_rank, created = UserRank.objects.get_or_create(user=user)
+        
+        # Update UserRank fields
+        user_rank.rank = rank
+        user_rank.total_score = total_score
+        user_rank.save()
+
+        rank += 1

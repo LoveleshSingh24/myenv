@@ -5,7 +5,6 @@ from account.models import Profile
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
-@login_required(login_url='login')
 def home(request):
     if(request.user.is_authenticated):
         user_object = User.objects.get(username=request.user)
