@@ -9,13 +9,16 @@
     <div class="container">
         <div class="d-flex justify-content-between">
             <span class="fs-5">{{quiz.created_at}}</span>
-            <span class="fs-5">10:00</span>
+            <span class="fs-5" id="timer">{{quiz.question_set.all|length}}:00</span>
         </div>
-
+        {% for message in messages %}
+            <div><h4 class="text-center text-success">{{message}}</h4></div>
+        {% endfor %}
+        
 
         <div class="questions my-4">
             {% for question in quiz.question_set.all %}
-                <div class="card mb-2">
+                <div class="card mb-2 question">
                     <div class="card-header fw-bold">
                         Question {{forloop.counter}}
                     </div>
@@ -24,15 +27,102 @@
                             {% for option in question.choice_set.all  %}
                                 <div class="form-check">
                                     <label class="form-check-label" for="{{option.id}}">
-                                        <input class="form-check-input" type="radio" name="{{option.question.id}}"  id="{{option.id}}">
+                                        <input class="form-check-input" value="{{option.text}}" type="radio" name="{{option.question.id}}"  id="{{option.id}}">
                                         {{option.text}}
                                     </label>
+                                    {% if option.is_correct %}
+                                        <span class="visually-hidden correct-answer" >{{option.text}}</span>
+                                    {% endif %}
                                 </div>
                         {% endfor %}
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary">Submit the quiz</button>
+        <form action="" method="post" id="quiz-form">
+            {% csrf_token %}
+            {% comment %} hidden input field for score {% endcomment %}
+            <input type="hidden" name="score" value="0" id="user-score">
+
+        </form>
+        <button type="submit" class="btn btn-primary" id="submit-button">Submit the quiz</button>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var submitButton = document.getElementById("submit-button");
+            var timerSpan = document.getElementById("timer");
+            var questions = document.querySelectorAll(".question");
+            var quizForm = document.querySelector("#quiz-form");
+            var userScoreInput = document.getElementById("user-score");
+            var quizDuration = questions.length * 60; //convert in seconds
+        
+            // Rest of your code...
+        
+        
+            console.log("Number of questions: ", questions.length);
+            
+            //update timer
+            function updateTimer() {
+                var minutes = Math.floor(quizDuration / 60);
+                var seconds = quizDuration % 60;
+            
+                timerSpan.innerText = minutes + "m" + seconds + "s";
+                console.log("Timer: ", minutes, "min", seconds, "sec");
+                //check if time ended
+                if (quizDuration <= 0) {
+                    //submit the quiz automatically
+                    clearTimeout(quizTimerId);
+                    submitQuiz();
+                } else {
+                    //decrement the timer value by 1 sec
+                    quizDuration--;
+                }
+            }
+            
+            //function to submit the quiz
+            // Function to submit the quiz
+            function submitQuiz() {
+                console.log("Submitting quiz...");
+                // Calculate the score 
+                calculateScore();
+
+                // Log the user score
+                console.log("User score:", userScoreInput.value);
+
+                // Submit the quiz form 
+                console.log("Submitting form...");
+                quizForm.submit();
+            }
+
+            
+            function calculateScore() {
+                var score = 0;
+            
+                //loop through each question 
+                questions.forEach(question => {
+                    var selectedInput = question.querySelector("input:checked");
+                    var correctAnswer = question.querySelector(".correct-answer").value;
+            
+                    //check if the answer is correct
+                    if (selectedInput && selectedInput.value === correctAnswer) {
+                        score += 1;
+                    }
+                });
+                //update the hidden field with score in form 
+                userScoreInput.value = score;
+            }
+            //hightlight correct answer while showing result
+            function highlightCorrectAnswer(){
+
+            }
+            
+            //attach event listener to submit button
+            submitButton.addEventListener("click", submitQuiz);
+            
+            //interval
+            var quizTimerId = setInterval(updateTimer, 1000);
+            console.log("Timer started.");
+        });
+    </script>
 {% endblock content %}
