@@ -23,3 +23,9 @@ def leaderboard_view(request):
     user_profile2 = Profile.objects.get(user=user_object)
     context = {"leaderboard_users": leaderboard_users, "user_profile2": user_profile2}
     return render(request, "leaderboard.html", context)
+
+def dashboard_view(request):
+    user_object = User.objects.get(username=request.user)
+    user_profile2 = Profile.objects.get(user=user_object)
+    context={"user_profile2":user_profile2}
+    return render(request,"dashboard.html",context)
