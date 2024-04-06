@@ -24,7 +24,7 @@ def home(request):
         user_profile2 = Profile.objects.get(user=user_object)
         context = {"user_profile2": user_profile2, "leaderboard_users": leaderboard_users}
     else:
-        context = {"leaderboard_users": leaderboard_users,}
+        context = {"leaderboard_users": leaderboard_users,"home":"active"}
     return render(request, 'welcome.html', context)
 
 @login_required(login_url='login')
@@ -32,7 +32,7 @@ def leaderboard_view(request):
     leaderboard_users = UserRank.objects.order_by('rank')
     user_object = User.objects.get(username=request.user)
     user_profile2 = Profile.objects.get(user=user_object)
-    context = {"leaderboard_users": leaderboard_users, "user_profile2": user_profile2}
+    context = {"leaderboard_users": leaderboard_users, "user_profile2": user_profile2,'leaderboard':'active'}
     return render(request, "leaderboard.html", context)
 
 def is_superuser(user):
@@ -87,7 +87,8 @@ def dashboard_view(request):
              "gain_quizzes":gain_quizzes,
              "gain_quiz_submit":gain_quiz_submit,
              "gain_question":gain_question,
-             "messages":messages}
+             "messages":messages,
+             "dashboard":"active"}
     return render(request,"dashboard.html",context)
 
 
