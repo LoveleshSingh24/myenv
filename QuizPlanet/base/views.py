@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.shortcuts import HttpResponse
 from django.contrib.auth.models import User
 from account.models import Profile
@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from quiz.models import UserRank,Quiz,QuizSubmission,Question
 import datetime
 import math
+from .models import Message
+from django.contrib import messages
+
 
 # Create your views here.
 
@@ -62,7 +65,10 @@ def dashboard_view(request):
         gain_question = gain_percentage(total_question,today_question)
     
 
+    #inbox message 
+    messages = Message.objects.filter(created_at__date=datetime.date.today()).order_by('-created_at')
 
+        
     context={"user_profile2":user_profile2,
              "total_user":total_user,
              "total_question":total_question , 
@@ -75,7 +81,8 @@ def dashboard_view(request):
              "gain_users":gain_users,
              "gain_quizzes":gain_quizzes,
              "gain_quiz_submit":gain_quiz_submit,
-             "gain_question":gain_question}
+             "gain_question":gain_question,
+             "messages":messages}
     return render(request,"dashboard.html",context)
 
 
@@ -115,12 +122,38 @@ def downloads_view(reqest):
         return render(reqest,'downloads.html',context)
 
 @login_required(login_url='login') 
-def contact_view(reqest):
-        user_object = User.objects.get(username=reqest.user)
-        user_profile2 = Profile.objects.get(user=user_object)
-        context = {"user_profile2": user_profile2,}
-        return render(reqest,'contact.html',context)
+def contact_view(request):
+    user_object = User.objects.get(username=request.user)
+    user_profile2 = Profile.objects.get(user=user_object)
+    
+    if request.method == "POST":
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        if subject is not None and message is not None:
+            form = Message.objects.create(user=request.user, subject=subject, message=message)
+            form.save()
+            messages.success(request, "Message is submitted, we will get back to you soon")
+            return redirect("profile", request.user.username)
+        else:
+             message.error(request,"Error! caused while sending the message")
+             return redirect('contact')
+    context = {"user_profile2": user_profile2}
+    return render(request, 'contact.html', context)
 
+@user_passes_test(is_superuser)
+@login_required(login_url='login') 
+def message_view(request,id):
+        user_object = User.objects.get(username=request.user)
+        user_profile2 = Profile.objects.get(user=user_object)
+
+        message=Message.objects.filter(id=int(id)).first()
+        if not message.is_read:
+             message.is_read=True
+             message.save()
+
+        context = {"user_profile2": user_profile2,"message":message}
+        return render(request,'message.html',context)
  
 def terms_and_conditions(request):
     if request.user.is_authenticated:

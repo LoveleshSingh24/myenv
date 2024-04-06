@@ -91,23 +91,19 @@
                             <th scope="col">Username</th>
                             <th scope="col">Subject</th>
                             <th scope="col">Time</th>
-                            <th scope="col"></th>
+                            <th scope="col">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="table-active">
-                            <th scope="row">1</th>
-                            <td><a href="">@Mark</a></td>
-                            <td>Feedback for you</td>
-                            <td>12 Aug, 2023</td>
-                            <td><a href="" class="btn btn-sm btn-primary">Open</a></td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td colspan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                            <td><a href="" class="btn btn-sm btn-primary">Open</a></td>
-                        </tr>
+                        {% for message in messages %}
+                            <tr class="table-active">
+                                <th scope="row"><{{forloop.counter}}>
+                                <td><a href="{% url "profile" message.user.username %}">@{{message.user.username}}</a></td>
+                                <td>{{message.subject}}</td>
+                                <td>{{message.created_at}}</td>
+                                <td><a href="{% url "message" message.id %}" class="btn btn-sm btn-primary">Open</a></td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
