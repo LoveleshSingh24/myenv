@@ -6,8 +6,11 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from quiz.models import UserRank,Quiz,QuizSubmission,Question
 import datetime
 import math
-from .models import Message
+from .models import Message,Blog
 from django.contrib import messages
+from django.db.models.functions import ExtractYear
+from django.db.models import Count
+
 
 
 # Create your views here.
@@ -87,6 +90,7 @@ def dashboard_view(request):
 
 
 def about_view(request):
+    
     if request.user.is_authenticated:
             user_object = User.objects.get(username=request.user)
             user_profile2 = Profile.objects.get(user=user_object)
@@ -97,21 +101,34 @@ def about_view(request):
             return render(request,'about.html',context)
     
 def blogs_view(request):
+    year_blog_count = (
+        Blog.objects
+        .annotate(year=ExtractYear('created_at'))
+        .filter(status='public')
+        .values('year')
+        .annotate(count=Count('id'))
+        .order_by('-year')
+)
+
+    blogs = Blog.objects.filter(status='public').order_by('-created_at')
     if request.user.is_authenticated:
         user_object = User.objects.get(username=request.user)
         user_profile2 = Profile.objects.get(user=user_object)
-        context = {"user_profile2": user_profile2,}
+        context = {"user_profile2": user_profile2,'year_blog_count':year_blog_count,'blogs':blogs}
         return render(request,'blogs.html',context)
     else:
-        context = {}
+        context = {'year_blog_count':year_blog_count,'blogs':blogs}
         return render(request,'blogs.html',context)
 
 @login_required(login_url='login')
 def blog_view(request,blog_id):
+
+    blog=Blog.objects.filter(id=blog_id).first()
+
     if request.user.is_authenticated:
         user_object = User.objects.get(username=request.user)
         user_profile2 = Profile.objects.get(user=user_object)
-        context = {"user_profile2": user_profile2,}
+        context = {"user_profile2": user_profile2,"blog":blog}
         return render(request,'blog.html',context)
 
 @login_required(login_url='login')  
@@ -164,3 +181,6 @@ def terms_and_conditions(request):
     else:
         context = {}
         return render(request,'terms-conditions.html',context)
+
+def search_user(request):
+     return render(request,"")

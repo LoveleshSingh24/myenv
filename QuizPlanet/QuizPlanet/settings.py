@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'account',
     'base',
     'quiz',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,9 @@ STATICFILES_DIRS =[
     BASE_DIR / 'static' #folder location
 ]
 
+MEDIA_URL='media/'
 MEDIA_ROOT = BASE_DIR/ 'media'
+CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -96,7 +96,7 @@
                     </thead>
                     <tbody>
                         {% for message in messages %}
-                            <tr class="table-active">
+                            <tr class="table-{% if not message.is_read %}active{% endif %}">
                                 <th scope="row"><{{forloop.counter}}>
                                 <td><a href="{% url "profile" message.user.username %}">@{{message.user.username}}</a></td>
                                 <td>{{message.subject}}</td>
