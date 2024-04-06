@@ -5,5 +5,7 @@ urlpatterns = [
     path('leaderboard',views.leaderboard_view,name='leaderboard'),
     path('dashboard',views.dashboard_view,name='dashboard'),
     path('about',views.about_view,name='about'),
+    path('blogs',views.blogs_view,name='blogs'),
+    path('blogs/<str:blog_id>',views.blog_view,name='blog'),
 
 ]
