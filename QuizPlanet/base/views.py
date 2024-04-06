@@ -10,19 +10,21 @@ from .models import Message,Blog
 from django.contrib import messages
 from django.db.models.functions import ExtractYear
 from django.db.models import Count
+from django.db.models import Q
 
 
 
 # Create your views here.
 
 def home(request):
+    
     leaderboard_users = UserRank.objects.order_by('rank')[:4]
     if request.user.is_authenticated:
         user_object = User.objects.get(username=request.user)
         user_profile2 = Profile.objects.get(user=user_object)
         context = {"user_profile2": user_profile2, "leaderboard_users": leaderboard_users}
     else:
-        context = {"leaderboard_users": leaderboard_users}
+        context = {"leaderboard_users": leaderboard_users,}
     return render(request, 'welcome.html', context)
 
 @login_required(login_url='login')
@@ -183,4 +185,18 @@ def terms_and_conditions(request):
         return render(request,'terms-conditions.html',context)
 
 def search_user(request):
-     return render(request,"")
+    query = request.GET.get('q')
+    if query:
+         users=User.objects.filter(
+            Q(username__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
+        ).order_by('-date_joined')
+    else:
+        users=[]    
+    if request.user.is_authenticated:
+        user_object = User.objects.get(username=request.user)
+        user_profile2 = Profile.objects.get(user=user_object)
+        context = {"user_profile2": user_profile2,"users":users,"query":query}
+        return render(request,"search_user.html",context)
+    else:
+        context = {"users":users,"query":query}
+        return render(request,'search_user.html',context)

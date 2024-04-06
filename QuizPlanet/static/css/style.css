@@ -1,3 +1,7 @@
 * {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
+.navbar-nav .nav-link.active {
+    color: #ff0000; /* Change color to indicate active link */
+    font-weight: bold; /* Optionally, make the active link bold */
+}

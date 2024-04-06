@@ -11,5 +11,6 @@ urlpatterns = [
     path('contact',views.contact_view,name='contact'),
     path('downloads',views.downloads_view,name='downloads'),
     path('termsandcondition',views.terms_and_conditions,name='termandcond'),
+    path('search/users',views.search_user,name='search_users'),
 
 ]

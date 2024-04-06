@@ -20,7 +20,7 @@ def all_quiz_view(request):
     quizzes = Quiz.objects.order_by('-created_at')
     categories=Category.objects.all()
 
-    context={"user_profile2":user_profile2,"quizzes":quizzes,"categories":categories}
+    context={"user_profile2":user_profile2,"quizzes":quizzes,"categories":categories,'quiz':'active'}
     return render(request,"all-quiz.html", context)
 
 @login_required(login_url='login')

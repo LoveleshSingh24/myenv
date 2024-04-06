@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 
-{% block title %}{{quiz.title}} - BrainBunny{% endblock title %}
+{% block title %}{{quiz.title}} - QuizPlanet{% endblock title %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
     <div class="container">
         <div class="d-flex justify-content-between">
             <span class="fs-5">{{quiz.created_at}}</span>
-            <span class="fs-5" id="timer">10:00</span>
+            <span class="fs-5" id="timer">{{quiz.question_set.all|length}}:00</span>
         </div>
 
         {% for message in messages %}
