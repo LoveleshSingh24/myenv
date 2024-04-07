@@ -19,11 +19,9 @@
 
     <div class="container text-center">
         <h1 class="display-4 text-center my-5">Leaderboard</h1>
-        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-1 row-cols-xl-4 mx-3">
+        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-1 row-cols-xl-4 mx-3 text-center">
             {% if leaderboard_users|length == 0 %}
-            <div class="text-center">
                 <h4 class="text-danger">No User Available On Leaderboard</h4>
-            </div>
             {% else %}
             {% for rank in leaderboard_users %}
             <div class="col-lg-4 position-relative mb-4">

@@ -45,51 +45,59 @@ def dashboard_view(request):
     user_object = User.objects.get(username=request.user)
     user_profile2 = Profile.objects.get(user=user_object)
 
+    # Initialize gain_users with a default value
+    gain_users = 0
+
     #total user 
-    total_user=User.objects.all().count()
-    total_quizzes=Quiz.objects.all().count()
-    total_quiz_submit=QuizSubmission.objects.all().count()
-    total_question=Question.objects.all().count()
+    total_user = User.objects.all().count()
+    total_quizzes = Quiz.objects.all().count()
+    total_quiz_submit = QuizSubmission.objects.all().count()
+    total_question = Question.objects.all().count()
 
-    today_user=User.objects.filter(date_joined__date=datetime.date.today()).count()
-    today_quizzes_objs=Quiz.objects.filter(created_at__date=datetime.date.today()).count()
-    today_quiz_submit=QuizSubmission.objects.filter(submitted_at__date=datetime.date.today()).count()
+    today_user = User.objects.filter(date_joined__date=datetime.date.today()).count()
+    today_quizzes_objs = Quiz.objects.filter(created_at__date=datetime.date.today()).count()
+    today_quiz_submit = QuizSubmission.objects.filter(submitted_at__date=datetime.date.today()).count()
 
-    today_question=0
+    today_question = 0
     for _ in range(today_quizzes_objs):
         today_question += Question.objects.filter(quiz__created_at__date=datetime.date.today()).count()
 
-    #gain 
-        def gain_percentage(total,today):
-            if total > 0 and today > 0:
-                gain = math.floor((today* 100)/total)
-                return gain
-        gain_users = gain_percentage(total_user,today_user)
-        gain_quizzes = gain_percentage(total_quizzes,today_quizzes_objs)
-        gain_quiz_submit = gain_percentage(total_quiz_submit,today_quiz_submit)
-        gain_question = gain_percentage(total_question,today_question)
+    # Gain 
+    def gain_percentage(total, today):
+        if total > 0 and today > 0:
+            gain = math.floor((today * 100) / total)
+            return gain
     
+    # Update gain_users if the condition is met
+    gain_users = gain_percentage(total_user, today_user)
 
-    #inbox message 
-    messages = Message.objects.filter(created_at__date=datetime.date.today()).order_by('-created_at')
+    gain_quizzes = gain_percentage(total_quizzes, today_quizzes_objs)
+    gain_quiz_submit = gain_percentage(total_quiz_submit, today_quiz_submit)
+    gain_question = gain_percentage(total_question, today_question)
 
-        
-    context={"user_profile2":user_profile2,
-             "total_user":total_user,
-             "total_question":total_question , 
-             "total_quizzes":total_quizzes,
-             "total_quiz_submit":total_quiz_submit,
-             "today_users":today_user,
-             "today_quizzes":today_quizzes_objs,
-             "today_quiz_submit":today_quiz_submit,
-             "today_question":today_question,
-             "gain_users":gain_users,
-             "gain_quizzes":gain_quizzes,
-             "gain_quiz_submit":gain_quiz_submit,
-             "gain_question":gain_question,
-             "messages":messages,
-             "dashboard":"active"}
-    return render(request,"dashboard.html",context)
+    # Inbox message 
+    messages = Message.objects.all().order_by('-created_at')
+    for message in messages:
+        print(message.subject)
+    context = {
+        "user_profile2": user_profile2,
+        "total_user": total_user,
+        "total_question": total_question,
+        "total_quizzes": total_quizzes,
+        "total_quiz_submit": total_quiz_submit,
+        "today_users": today_user,
+        "today_quizzes": today_quizzes_objs,
+        "today_quiz_submit": today_quiz_submit,
+        "today_question": today_question,
+        "gain_users": gain_users,
+        "gain_quizzes": gain_quizzes,
+        "gain_quiz_submit": gain_quiz_submit,
+        "gain_question": gain_question,
+        "messages": messages,
+        "dashboard": "active"
+    }
+    return render(request, "dashboard.html", context)
+
 
 
 def about_view(request):
@@ -145,19 +153,19 @@ def downloads_view(reqest):
 def contact_view(request):
     user_object = User.objects.get(username=request.user)
     user_profile2 = Profile.objects.get(user=user_object)
-    
     if request.method == "POST":
-        subject = request.POST.get('subject')
-        message = request.POST.get('message')
+            subject = request.POST.get('subject')
+            message = request.POST.get('message')
+            
+            if subject is not None and message is not None:
+                form = Message.objects.create(user=request.user, subject=subject, message=message)
+                form.save()
+                messages.success(request, "Message is submitted, we will get back to you soon")
+                return redirect("profile", request.user.username)
+            else:
+                messages.error(request, "Error! caused while sending the message")
+                return redirect('contact')
         
-        if subject is not None and message is not None:
-            form = Message.objects.create(user=request.user, subject=subject, message=message)
-            form.save()
-            messages.success(request, "Message is submitted, we will get back to you soon")
-            return redirect("profile", request.user.username)
-        else:
-             message.error(request,"Error! caused while sending the message")
-             return redirect('contact')
     context = {"user_profile2": user_profile2}
     return render(request, 'contact.html', context)
 
