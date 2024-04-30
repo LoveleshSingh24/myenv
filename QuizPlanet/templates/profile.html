@@ -54,7 +54,7 @@
                                 <tr>
                                     <th scope="row">{{forloop.counter}}</th>
                                     <td title="{{submission.quiz.title}}">{{submission.quiz.title | truncatewords:4}}</td>
-                                    <td>{{submission.score}}/{{submmission.quiz.question_set.all|length}}</td>
+                                    <td>{{submission.score}}/{{submission.quiz.question_set.all|length}}</td>
                                     <td>{{submission.submitted_at|timesince}} ago</td>
                                 </tr>
                             {% endfor %}
