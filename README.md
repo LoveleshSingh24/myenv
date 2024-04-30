@@ -1,4 +1,5 @@
 ![home](https://github.com/LoveleshSingh24/myenv/assets/120625848/9ffaef42-9533-4061-a3d8-671ae433bad8)
+![quiz_question](https://github.com/LoveleshSingh24/myenv/assets/120625848/4e4f76e9-32d3-49af-86e2-e13c6e36eeda)
 ![all_quiz](https://github.com/LoveleshSingh24/myenv/assets/120625848/de5621ad-e7fe-4af7-b7f8-a99e6b2a8650)
 ![Registration_page](https://github.com/LoveleshSingh24/myenv/assets/120625848/9b8be7e6-47f0-46b8-a2fc-932107b6b0d9)
 ![profile_page](https://github.com/LoveleshSingh24/myenv/assets/120625848/896491f8-e38c-4d0f-8d71-aa99ea8f4251)
